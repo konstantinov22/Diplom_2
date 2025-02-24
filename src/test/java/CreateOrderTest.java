@@ -96,11 +96,19 @@ public class CreateOrderTest {
     @DisplayName("Создание заказа с ингредиентами неавторизованным пользователем")
     @Description("Создание заказа с ингредиентами неавторизованным пользователем")
     public void createOrderWithIngredientsUnauthorizedUserGetError() {
+        // Генерация подсписка ингредиентов
         ingredientSublistSize = Random.generateSizeForIngredientSublist(allIngredients.size());
         ingredients = allIngredients.subList(0, ingredientSublistSize);
         orders = new Orders(ingredients);
+
+        // Отправка запроса и проверка ответа
         OrdersUsers.createOrderWithoutAuth(orders)
-                .then().assertThat().statusCode(HttpStatus.SC_OK);
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.SC_OK) // Проверяем статус-код
+                .body("success", equalTo(true)) // Проверяем, что success равен true
+                .body("order.number", notNullValue()) // Проверяем, что номер заказа присутствует
+                .body("name", notNullValue()); // Проверяем, что имя заказа присутствует
     }
 }
 
